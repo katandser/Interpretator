@@ -80,6 +80,8 @@ public class Interpreter {
         input.add(new Uno(")", CLOSE_CIRCLE, 1));
         input.add(new Uno("*", STAR, 1));
         input.add(new Uno("2", CONSDEC, 1));
+        input.add(new Uno("==", EQ, 1));
+        input.add(new Uno("-1", CONSDEC, 1));
 
         input.forEach(element-> System.out.print(element.getName()));
         System.out.println();
@@ -134,18 +136,17 @@ public class Interpreter {
     }
 
 
-    private static int binaryOperDis(Object in1, Object in2, int oper) {
+    private static Object binaryOperDis(Object in1, Object in2, int oper) {
         if (in1 instanceof Long || in2 instanceof Long) {
-            //return (int) binaryOper((long)in1 , (long)in2 ,oper );
+            return (long) binaryOper((long)in1 , (long)in2 ,oper );
         }
         else if (in1 instanceof Integer || in2 instanceof Integer) {
-            return (int) binaryOper((Integer)in2, (Integer)in1, oper);
+            return (int) binaryOper((int)in2, (int)in1, oper);
         }
         else
         {
-            ;//long l = binaryOper((long) in1, (long) in2, oper); return (int) l;
+            return (short) binaryOper((short)in1 , (short)in2 ,oper );
         }
-        return 1;
 
     }
     private static int binaryOper(int in1, int in2, int oper) {
@@ -165,11 +166,106 @@ public class Interpreter {
         else if (oper == SLASH) {
             result = in1 / in2;
         }
+        else if (oper == EQ) {
+            if (in1 == in2){
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
+        else if (oper == NOTEQ) {
+            if (in1 != in2){
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
+        else if (oper == LESS) {
+            if (in1 < in2){
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
+        else if (oper == EQLESS) {
+            if (in1 <= in2){
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
+        else if (oper == GREAT) {
+            if (in1 > in2){
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
+        else if (oper == EQGREAT) {
+            if (in1 >= in2){
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
         else {
             result = 0;
         }
         return result;
-    }ghmghmjgmjgjm
+    }
+
+    private static long binaryOper(long in1, long in2, int oper) {
+        long result;
+        if (oper == PLUS) {
+            result = in1 + in2;
+        }
+        else if (oper == MINUS) {
+            result = in1 - in2;
+        }
+        else if (oper == STAR) {
+            result = in1 * in2;
+        }
+        else if (oper == PROC) {
+            result = in1 % in2;
+        }
+        else if (oper == SLASH) {
+            result = in1 / in2;
+        }
+        else {
+            result = 0;
+        }
+        return result;
+    }
+
+    private static short binaryOper(short in1, short in2, int oper) {
+        short result;
+        if (oper == PLUS) {
+            result = (short) (in1 + in2);
+        }
+        else if (oper == MINUS) {
+            result = (short) (in1 - in2);
+        }
+        else if (oper == STAR) {
+            result = (short) (in1 * in2);
+        }
+        else if (oper == PROC) {
+            result = (short) (in1 % in2);
+        }
+        else if (oper == SLASH) {
+            result = (short) (in1 / in2);
+        }
+        else {
+            result = 0;
+        }
+        return result;
+    }
+
     private static void dis(Uno i, Queue<Uno> stack) {
         Object f = binaryOperDis(stack.remove().getValue() , stack.remove().getValue(), i.getType());
         int jj = (int)f;
@@ -188,6 +284,7 @@ public class Interpreter {
                 dis(i,stack);
             }
         }
+        System.out.println();
         System.out.println(stack.peek());
         return 1;
     }

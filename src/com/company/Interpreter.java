@@ -65,6 +65,7 @@ public class Interpreter {
 
         Uno d;
         input.add(new Uno("3", CONSDEC, 1));
+        //input.add(new Uno("++", PLUSPLUS, 1));
         input.add(new Uno("+", PLUS, 1));
         input.add(new Uno("4", CONSDEC, 1));
         input.add(new Uno("*", STAR, 1));
@@ -151,6 +152,9 @@ public class Interpreter {
         }
 
     }
+
+
+
     private static int binaryOper(int in1, int in2, int oper) {
         int result;
         if (oper == PLUS) {
@@ -268,10 +272,12 @@ public class Interpreter {
         return result;
     }
 
-    private static void dis(Uno i, Queue<Uno> stack) {
+    private static void disBinary(Uno i, Queue<Uno> stack) {
         Object f = binaryOperDis(stack.remove().getValue() , stack.remove().getValue(), i.getType());
-        int jj = (int)f;
-        stack.add(new Uno(String.valueOf(jj)));
+        stack.add(new Uno(String.valueOf(f)));
+    }
+    private static void disUnary(Uno i, Queue<Uno> stack) {
+
     }
 
 
@@ -282,8 +288,11 @@ public class Interpreter {
             if (check(type) == SYMBOL) {
                 stack.add(i);
             }
+            else if (check(type) == PLUSPLUS) {
+;               ;
+            }
             else {
-                dis(i,stack);
+                disBinary(i,stack);
             }
         }
         System.out.println();

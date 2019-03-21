@@ -30,9 +30,6 @@ public class Interpreter {
         if (lex == CONSDEC || lex == CONSHEX || lex == VAR) {
             return SYMBOL;
         }
-        else if (lex == PLUSPLUS || lex == MINUSMINUS) {
-            return POST;
-        }
         else if (lex == OPEN_CIRCLE) {
             return OPEN;
         }
@@ -65,23 +62,23 @@ public class Interpreter {
 
         Uno d;
         input.add(new Uno("3", CONSDEC, 1));
-        //input.add(new Uno("++", PLUSPLUS, 1));
-        input.add(new Uno("+", PLUS, 1));
+        input.add(new Uno("--", MINUSMINUS, 1));
+        input.add(new Uno("*", STAR, 1));
         input.add(new Uno("4", CONSDEC, 1));
-        input.add(new Uno("*", STAR, 1));
-        input.add(new Uno("2", CONSDEC, 1));
-        input.add(new Uno("/", SLASH, 1));
-        input.add(new Uno("(", OPEN_CIRCLE, 1));
-        input.add(new Uno("1", CONSDEC, 1));
-        input.add(new Uno("-", MINUS, 1));
-        input.add(new Uno("5", CONSDEC, 1));
-        input.add(new Uno(")", CLOSE_CIRCLE, 1));
-        input.add(new Uno("*", STAR, 1));
-        input.add(new Uno("2", CONSDEC, 1));
-        input.add(new Uno("!=", NOTEQ, 1));
-        input.add(new Uno("-1", CONSDEC, 1));
-        input.add(new Uno("<", LESS, 1));
-        input.add(new Uno("-2", CONSDEC, 1));
+//        input.add(new Uno("*", STAR, 1));
+//        input.add(new Uno("2", CONSDEC, 1));
+//        input.add(new Uno("/", SLASH, 1));
+//        input.add(new Uno("(", OPEN_CIRCLE, 1));
+//        input.add(new Uno("1", CONSDEC, 1));
+//        input.add(new Uno("-", MINUS, 1));
+//        input.add(new Uno("5", CONSDEC, 1));
+//        input.add(new Uno(")", CLOSE_CIRCLE, 1));
+//        input.add(new Uno("*", STAR, 1));
+//        input.add(new Uno("2", CONSDEC, 1));
+//        input.add(new Uno("!=", NOTEQ, 1));
+//        input.add(new Uno("-1", CONSDEC, 1));
+//        input.add(new Uno("<", LESS, 1));
+//        input.add(new Uno("-2", CONSDEC, 1));
 
 
 
@@ -134,8 +131,6 @@ public class Interpreter {
         }
         output.forEach(element-> System.out.print(element.getName()));
         calculation(output);
-        
-        
     }
 
 
@@ -150,9 +145,61 @@ public class Interpreter {
         {
             return (short) binaryOper((short)in1 , (short)in2 ,oper );
         }
-
     }
 
+
+    private static Object unaryOperDis(Object in1, int oper) {
+        if (in1 instanceof Long) {
+            return (long) unaryOper((long)in1 , oper );
+        }
+        else if (in1 instanceof Integer) {
+            return (int) unaryOper((int)in1, oper);
+        }
+        else {
+            return (short) unaryOper((short)in1 ,oper );
+        }
+    }
+
+    private static int unaryOper(int in1, int oper) {
+        int result;
+        if (oper == PLUSPLUS) {
+            result = in1 + 1;
+        }
+        else if (oper == MINUSMINUS) {
+            result = in1 - 1;
+        }
+        else {
+            result = 100;
+        }
+        return result;
+    }
+
+    private static long unaryOper(long in1, int oper) {
+        long result;
+        if (oper == PLUSPLUS) {
+            result = in1 + 1;
+        }
+        else if (oper == MINUSMINUS) {
+            result = in1 - 1;
+        }
+        else {
+            result = 100;
+        }
+        return result;
+    }
+    private static short unaryOper(short in1, int oper) {
+        short result;
+        if (oper == PLUSPLUS) {
+            result = (short) (in1 + 1);
+        }
+        else if (oper == MINUSMINUS) {
+            result = (short) (in1 - 1);
+        }
+        else {
+            result = 100;
+        }
+        return result;
+    }
 
 
     private static int binaryOper(int in1, int in2, int oper) {
@@ -243,6 +290,54 @@ public class Interpreter {
         else if (oper == SLASH) {
             result = in1 / in2;
         }
+        else if (oper == EQ) {
+            if (in1 == in2){
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
+        else if (oper == NOTEQ) {
+            if (in1 != in2){
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
+        else if (oper == LESS) {
+            if (in1 < in2){
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
+        else if (oper == EQLESS) {
+            if (in1 <= in2){
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
+        else if (oper == GREAT) {
+            if (in1 > in2){
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
+        else if (oper == EQGREAT) {
+            if (in1 >= in2){
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
         else {
             result = 0;
         }
@@ -266,6 +361,54 @@ public class Interpreter {
         else if (oper == SLASH) {
             result = (short) (in1 / in2);
         }
+        else if (oper == EQ) {
+            if (in1 == in2){
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
+        else if (oper == NOTEQ) {
+            if (in1 != in2){
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
+        else if (oper == LESS) {
+            if (in1 < in2){
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
+        else if (oper == EQLESS) {
+            if (in1 <= in2){
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
+        else if (oper == GREAT) {
+            if (in1 > in2){
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
+        else if (oper == EQGREAT) {
+            if (in1 >= in2){
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
         else {
             result = 0;
         }
@@ -277,7 +420,8 @@ public class Interpreter {
         stack.add(new Uno(String.valueOf(f)));
     }
     private static void disUnary(Uno i, Queue<Uno> stack) {
-
+        Object f = unaryOperDis(stack.remove().getValue() , i.getType());
+        stack.add(new Uno(String.valueOf(f)));
     }
 
 
@@ -288,8 +432,8 @@ public class Interpreter {
             if (check(type) == SYMBOL) {
                 stack.add(i);
             }
-            else if (check(type) == PLUSPLUS) {
-;               ;
+            else if (check(type) == POST) {
+;               disUnary(i,stack);
             }
             else {
                 disBinary(i,stack);

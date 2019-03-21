@@ -169,7 +169,7 @@ public class Interpreter {
             result = 0;
         }
         return result;
-    }
+    }ghmghmjgmjgjm
     private static void dis(Uno i, Queue<Uno> stack) {
         Object f = binaryOperDis(stack.remove().getValue() , stack.remove().getValue(), i.getType());
         int jj = (int)f;

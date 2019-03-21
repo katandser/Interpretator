@@ -17,7 +17,6 @@ public class Interpreter {
     private static final int OPER_LVL_3 = 8;
     private static final int OPER_LVL_4 = 9;
 
-
     Queue <List <Uno> > stackLevelInterpretation = Collections.asLifoQueue(new ArrayDeque<>());
 
     void addLevel(List <Uno> list) {
@@ -26,10 +25,6 @@ public class Interpreter {
     void removeLevel() {
         stackLevelInterpretation.remove();
     }
-
-
-
-
 
     static private int check(int lex) {
         if (lex == CONSDEC || lex == CONSHEX || lex == VAR) {
@@ -66,6 +61,8 @@ public class Interpreter {
         List <Uno> output = new LinkedList<>();
         Queue<Uno> stack = Collections.asLifoQueue(new ArrayDeque<>());
 
+
+
         Uno d;
         input.add(new Uno("3", CONSDEC, 1));
         input.add(new Uno("+", PLUS, 1));
@@ -80,8 +77,13 @@ public class Interpreter {
         input.add(new Uno(")", CLOSE_CIRCLE, 1));
         input.add(new Uno("*", STAR, 1));
         input.add(new Uno("2", CONSDEC, 1));
-        input.add(new Uno("==", EQ, 1));
+        input.add(new Uno("!=", NOTEQ, 1));
         input.add(new Uno("-1", CONSDEC, 1));
+        input.add(new Uno("<", LESS, 1));
+        input.add(new Uno("-2", CONSDEC, 1));
+
+
+
 
         input.forEach(element-> System.out.print(element.getName()));
         System.out.println();
@@ -285,7 +287,7 @@ public class Interpreter {
             }
         }
         System.out.println();
-        System.out.println(stack.peek());
+        System.out.println(stack.peek().getValue());
         return 1;
     }
 }

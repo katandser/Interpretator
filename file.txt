@@ -1,2 +1,2 @@
-short short1 = (44 + 44) * 2 / 2 % 2 == 0;
-long long ss = short1;
+short short1 = ((44 + 44) * 2 / 2 == 0) + 1 * 666;
+long long ss = short1 * 9 + ((short1 + 10) * 2);

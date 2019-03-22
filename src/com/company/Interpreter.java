@@ -18,13 +18,51 @@ public class Interpreter {
     private static final int OPER_LVL_4 = 9;
 
     Queue <List <Uno> > stackLevelInterpretation = Collections.asLifoQueue(new ArrayDeque<>());
-
     void addLevel(List <Uno> list) {
         stackLevelInterpretation.add(list);
     }
     void removeLevel() {
         stackLevelInterpretation.remove();
     }
+
+    public void addElement(Uno o) {
+        if (o.getValue() == null && o.getType() == ID) {
+            System.out.println("\nNon init var: " + o.getName());
+            System.exit(1);
+        }
+        Uno un = new Uno();
+        un.setValue(o.getValue());
+        un.setType(o.getType());
+        un.setName(o.getName());
+        stackLevelInterpretation.peek().add(un);
+    }
+    public void inc(Uno un) {
+        Object ob = un.getValue();
+        if (ob instanceof Long) {
+            un.setValue((Long)ob + 1);
+        }
+        else if (ob instanceof Integer)
+        {
+            un.setValue((Integer)ob + 1);
+        }
+        else {
+            un.setValue((Short)ob + 1);
+        }
+    }
+    public void dec(Uno un) {
+        Object ob = un.getValue();
+        if (ob instanceof Long) {
+            un.setValue((Long)ob - 1);
+        }
+        else if (ob instanceof Integer)
+        {
+            un.setValue((Integer)ob - 1);
+        }
+        else {
+            un.setValue((Short)ob - 1);
+        }
+    }
+
 
     static private int check(int lex) {
         if (lex == CONSDEC || lex == CONSHEX || lex == ID) {
@@ -59,9 +97,6 @@ public class Interpreter {
         Queue<Uno> stack = Collections.asLifoQueue(new ArrayDeque<>());
 
         Uno d;
-        input.forEach(element-> System.out.print(element.getName()));
-        System.out.println();
-
         for (Uno i : input) {
             int type = check(i.getType());
 
@@ -105,25 +140,27 @@ public class Interpreter {
         while (stack.peek() != null) {
             output.add(stack.remove());
         }
-        output.forEach(element-> System.out.print(element.getName()));
         return calculation(output);
     }
 
 
     private static Object binaryOperDis(Object in1, Object in2, int oper) {
+        if (in1 == null || in2 == null) {
+            System.out.println("\nNon initialization param");
+            System.exit(1);
+        }
         if (in1 instanceof Long || in2 instanceof Long) {
             return (long) binaryOper((long)in1 , (long)in2 ,oper );
         }
         else if (in1 instanceof Integer || in2 instanceof Integer) {
             return (int) binaryOper((int)in2, (int)in1, oper);
         }
-        else
-        {
+        else {
             return (short) binaryOper((short)in1 , (short)in2 ,oper );
         }
     }
-    private static int binaryOper(int in1, int in2, int oper) {
-        int result;
+    private static int binaryOper(int in1, int in2, int oper) throws ArithmeticException {
+        int result = 0;
         if (oper == PLUS) {
             result = in1 + in2;
         }
@@ -134,108 +171,19 @@ public class Interpreter {
             result = in1 * in2;
         }
         else if (oper == PROC) {
-            if (in2 == 0)
-            {
-                System.out.println("INfinit");
-                result = Integer.MAX_VALUE;
-            }
-            else {
+            try {
                 result = in1 % in2;
+            } catch (ArithmeticException ae) {
+                System.out.println("\nДеление на 0");
+                System.exit(1);
             }
         }
         else if (oper == SLASH) {
-            if (in2 == 0)
-            {
-                System.out.println("INfinit");
-                result = Integer.MAX_VALUE;
-            }
-            else {
-                result = in1 % in2;
-            }
-        }
-        else if (oper == EQ) {
-            if (in1 == in2){
-                return 1;
-            }
-            else {
-                return 0;
-            }
-        }
-        else if (oper == NOTEQ) {
-            if (in1 != in2){
-                return 1;
-            }
-            else {
-                return 0;
-            }
-        }
-        else if (oper == LESS) {
-            if (in1 < in2){
-                return 1;
-            }
-            else {
-                return 0;
-            }
-        }
-        else if (oper == EQLESS) {
-            if (in1 <= in2){
-                return 1;
-            }
-            else {
-                return 0;
-            }
-        }
-        else if (oper == GREAT) {
-            if (in1 > in2){
-                return 1;
-            }
-            else {
-                return 0;
-            }
-        }
-        else if (oper == EQGREAT) {
-            if (in1 >= in2){
-                return 1;
-            }
-            else {
-                return 0;
-            }
-        }
-        else {
-            result = 0;
-        }
-        return result;
-    }
-
-    private static long binaryOper(long in1, long in2, int oper) {
-        long result;
-        if (oper == PLUS) {
-            result = in1 + in2;
-        }
-        else if (oper == MINUS) {
-            result = in1 - in2;
-        }
-        else if (oper == STAR) {
-            result = in1 * in2;
-        }
-        else if (oper == PROC) {
-            if (in2 == 0)
-            {
-                System.out.println("INfinit");
-                result = Integer.MAX_VALUE;
-            }
-            else {
-                result = in1 % in2;
-            }
-        }
-        else if (oper == SLASH) {
-            if (in2 == 0)
-            {
-                System.out.println("INfinit");
-                result = Long.MAX_VALUE;
-            }
-            else {
+            try {
                 result = in1 / in2;
+            } catch (ArithmeticException ae) {
+                System.out.println("\nДеление на 0");
+                System.exit(1);
             }
         }
         else if (oper == EQ) {
@@ -292,8 +240,89 @@ public class Interpreter {
         return result;
     }
 
-    private static short binaryOper(short in1, short in2, int oper) {
-        short result;
+    private static long binaryOper(long in1, long in2, int oper) throws ArithmeticException {
+        long result = 0;
+        if (oper == PLUS) {
+            result = in1 + in2;
+        }
+        else if (oper == MINUS) {
+            result = in1 - in2;
+        }
+        else if (oper == STAR) {
+            result = in1 * in2;
+        }
+        else if (oper == PROC) {
+            try {
+                result = in1 % in2;
+            } catch (ArithmeticException ae) {
+                System.out.println("\nДеление на 0");
+                System.exit(1);
+            }
+        }
+        else if (oper == SLASH) {
+            try {
+                result = in1 / in2;
+            } catch (ArithmeticException ae) {
+                System.out.println("\nДеление на 0");
+                System.exit(1);
+            }
+        }
+        else if (oper == EQ) {
+            if (in1 == in2){
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
+        else if (oper == NOTEQ) {
+            if (in1 != in2){
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
+        else if (oper == LESS) {
+            if (in1 < in2){
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
+        else if (oper == EQLESS) {
+            if (in1 <= in2){
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
+        else if (oper == GREAT) {
+            if (in1 > in2){
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
+        else if (oper == EQGREAT) {
+            if (in1 >= in2){
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
+        else {
+            result = 0;
+        }
+        return result;
+    }
+
+    private static short binaryOper(short in1, short in2, int oper) throws ArithmeticException {
+        short result = 0;
         if (oper == PLUS) {
             result = (short) (in1 + in2);
         }
@@ -303,24 +332,19 @@ public class Interpreter {
         else if (oper == STAR) {
             result = (short) (in1 * in2);
         }
-        else if (oper == PROC) {
-            if (in2 == 0)
-            {
-                System.out.println("INfinit");
-                result = Short.MAX_VALUE;
-            }
-            else {
-                result = (short) (in1 % in2);
-            }
+        else if (oper == PROC) {try {
+            result = (short) (in1 % in2);
+        } catch (ArithmeticException ae) {
+            System.out.println("Деление на 0");
+            System.exit(1);
+        }
         }
         else if (oper == SLASH) {
-            if (in2 == 0)
-            {
-                System.out.println("INfinit");
-                result = Short.MAX_VALUE;
-            }
-            else {
+            try {
                 result = (short) (in1 / in2);
+            } catch (ArithmeticException ae) {
+                System.out.println("Деление на 0");
+                System.exit(1);
             }
         }
         else if (oper == EQ) {
@@ -395,8 +419,5 @@ public class Interpreter {
             }
         }
         return stack.peek().getValue();
-//        System.out.println();
-//        System.out.println(stack.peek().getValue());
-//        stack.clear();
     }
 }

@@ -161,7 +161,6 @@ public class Sinta{
             Uno result = o;
             o = read();
             o = read();
-
             List<Uno> output = new LinkedList<>();
             interpreter.addLevel(output);
             boolean b = viraj();
@@ -205,7 +204,7 @@ public class Sinta{
             b = viraj2();
             if (b == false) {
                 if (o.getType() == EQ || o.getType() == NOTEQ) {
-                    interpreter.stackLevelInterpretation.peek().add(o);
+                    interpreter.addElement(o);
                     o = read();
                 }
                 else {
@@ -224,7 +223,7 @@ public class Sinta{
             b = viraj3();
             if (b == false) {
                 if (o.getType() == EQLESS || o.getType() == EQGREAT || o.getType() == LESS || o.getType() == GREAT) {
-                    interpreter.stackLevelInterpretation.peek().add(o);
+                    interpreter.addElement(o);
                     o = read();
                 }
                 else {
@@ -243,7 +242,7 @@ public class Sinta{
             b = viraj4();
             if (b == false) {
                 if (o.getType() == PLUS || o.getType() == MINUS) {
-                    interpreter.stackLevelInterpretation.peek().add(o);
+                    interpreter.addElement(o);
                     o = read();
                 }
                 else {
@@ -262,7 +261,7 @@ public class Sinta{
             b = viraj5();
             if (b == false) {
                 if (o.getType() == SLASH || o.getType() == STAR || o.getType() == PROC) {
-                    interpreter.stackLevelInterpretation.peek().add(o);
+                    interpreter.addElement(o);
                     o = read();
                 }
                 else {
@@ -283,12 +282,12 @@ public class Sinta{
     boolean viraj6() {
         boolean b = false;
         if (o.getType() == OPEN_CIRCLE) {
-            interpreter.stackLevelInterpretation.peek().add(o);
+            interpreter.addElement(o);
             o = read();
             b = viraj();
             if (b == false) {
                 if (o.getType() == CLOSE_CIRCLE) {
-                    interpreter.stackLevelInterpretation.peek().add(o);
+                    interpreter.addElement(o);
                     o = read();
                     return false;
                 }
@@ -302,7 +301,7 @@ public class Sinta{
             }
         }
         else if(o.getType() == CONSDEC || o.getType() == CONSHEX) {
-            interpreter.stackLevelInterpretation.peek().add(o);
+            interpreter.addElement(o);
             o = read();
             return false;
         }
@@ -339,23 +338,22 @@ public class Sinta{
                     }
                 }
             }
-            else if (uprO.getType() == PLUSPLUS){
-                o = read();
-                o = read();
-                return false;
-            }
-            else if (uprO.getType() == MINUSMINUS){
-                o = read();
-                o = read();
-                return false;
-            }
             else {
                 Uno un = tr.findVar(o);
                 if (un == null) {
                     System.out.println("ERROR--" + "unknow var: " + o.getName() + " string: " + o.getStr());
+                    System.exit(1);
                 }
                 else {
-                    interpreter.stackLevelInterpretation.peek().add(un);
+                    interpreter.addElement(un);
+                }
+                if (uprO.getType() == PLUSPLUS){
+                    interpreter.inc(un);
+                    o = read();
+                }
+                if (uprO.getType() == MINUSMINUS){
+                    interpreter.dec(un);
+                    o = read();
                 }
                 o = read();
                 return false;
@@ -363,8 +361,23 @@ public class Sinta{
         }
         else if (o.getType() == PLUSPLUS) {
             o = read();
-            if (o.getType() == ID && uprRead().getType() != OPEN_CIRCLE) {
+            if (o.getType() == ID) {
+                Uno un = tr.findVar(o);
+                if (un == null) {
+                    System.out.println("ERROR--" + "unknow var: " + o.getName() + " string: " + o.getStr());
+                    System.exit(1);
+                }else {
+                    if (un.getValue() == null) {
+                        System.out.println("\nNon init var: " + un.getName());
+                        System.exit(1);
+                    }
+                    else {
+                        interpreter.inc(un);
+                        interpreter.addElement(un);
+                    }
+                }
                 o = read();
+
                 return false;
             }
             else {
@@ -373,7 +386,21 @@ public class Sinta{
         }
         else if (o.getType() == MINUSMINUS) {
             o = read();
-            if (o.getType() == ID && uprRead().getType() != OPEN_CIRCLE) {
+            if (o.getType() == ID) {
+                Uno un = tr.findVar(o);
+                if (un == null) {
+                    System.out.println("ERROR--" + "unknow var: " + o.getName() + " string: " + o.getStr());
+                    System.exit(1);
+                }else {
+                    if (un.getValue() == null) {
+                        System.out.println("\nNon init var: " + un.getName());
+                        System.exit(1);
+                    }
+                    else {
+                        interpreter.dec(un);
+                        interpreter.addElement(un);
+                    }
+                }
                 o = read();
                 return false;
             }

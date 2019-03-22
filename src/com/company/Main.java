@@ -18,10 +18,6 @@ public class Main {
                 System.out.println("win");
             }
         }
-        //System.out.println("\n\n\nДерево:");
         sin.tr.view(sin.tr.getRoot());
     }
-//public static void main(String[] args) {
-//    Interpreter.vir();
-//}
 }

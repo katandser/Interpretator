@@ -82,7 +82,6 @@ class Node{
         this.left = null;
         this.right = null;
     }
-
 }
 
 public class Tree {
@@ -121,17 +120,18 @@ public class Tree {
 
     Tree(){root = current = null; depth = 0;}
 
-    boolean findVar(Uno elem){
+    Uno findVar(Uno elem){
         Node saveCur = current;
         while (current != null){
             if (current.getType() == Scan.VAR && current.getElem().getName().equals(elem.getName())){
+                Uno un = current.getElem();
                 current = saveCur;
-                return true;
+                return un;
             }
             current = current.getParent();
         }
         current = saveCur;
-        return false;
+        return null;
     }
     boolean findFunc(Uno elem){
         Node saveCur = current;
@@ -177,7 +177,7 @@ public class Tree {
                 System.out.println(")");
             }
             if (n.getType() == Scan.VAR){
-                System.out.println(n.getElem().getName() + " - " + Uno.stringType(n.getReType()) + " - " + Uno.stringType(n.getType()));
+                System.out.println(n.getElem().getName() + " - " + Uno.stringType(n.getReType()) + " - " + Uno.stringType(n.getType())  + " - " +  n.getElem().getValue());
             }
         }
         if (n.getRight() != null)        {

@@ -32,6 +32,7 @@ public class Sinta{
     Tree tr;
     Interpreter interpreter;
     Sinta() {
+        interpreter = new Interpreter();
         sc = new Scan();
         tr = new Tree();
         arrayList = new ArrayList<Uno>();
@@ -64,7 +65,8 @@ public class Sinta{
     boolean pref(){
         o = read();
         if (o.getType() == ID) {
-            if (tr.findVar(o) == false) {
+            Uno un = tr.findVar(o);
+            if (un == null) {
                 System.out.println("ERROR--" + "unknow var: " + o.getName() + " string: " + o.getStr());
             }
             o = read();
@@ -121,7 +123,8 @@ public class Sinta{
     }
 
     boolean date() {
-        if (tr.findVar(o) == false) {
+        Uno un = tr.findVar(o);
+        if (un == null) {
             tr.addLeft(o,VAR, lastType);
         }
         else {
@@ -155,9 +158,17 @@ public class Sinta{
     boolean  peremen() {
         uprO = uprRead();
         if (uprO.getType() == ASSIGN) {
+            Uno result = o;
             o = read();
             o = read();
-            return viraj();
+
+            List<Uno> output = new LinkedList<>();
+            interpreter.addLevel(output);
+            boolean b = viraj();
+            Object ob = Interpreter.vir(interpreter.stackLevelInterpretation.peek());
+            result.setValue(ob);
+            interpreter.removeLevel();
+            return b;
         }
         else if (uprO.getType() == DOTCOM) {
             o = read();
@@ -189,23 +200,15 @@ public class Sinta{
     }
     boolean viraj() {
 
-        List<Uno> output = new LinkedList<>();
-        interpreter.addLevel(output);
-
-
         boolean b = false;
         while (b == false) {
             b = viraj2();
             if (b == false) {
                 if (o.getType() == EQ || o.getType() == NOTEQ) {
+                    interpreter.stackLevelInterpretation.peek().add(o);
                     o = read();
                 }
                 else {
-                    if (b == false) {
-
-                    }
-
-
                     return b;
                 }
             }
@@ -221,6 +224,7 @@ public class Sinta{
             b = viraj3();
             if (b == false) {
                 if (o.getType() == EQLESS || o.getType() == EQGREAT || o.getType() == LESS || o.getType() == GREAT) {
+                    interpreter.stackLevelInterpretation.peek().add(o);
                     o = read();
                 }
                 else {
@@ -239,6 +243,7 @@ public class Sinta{
             b = viraj4();
             if (b == false) {
                 if (o.getType() == PLUS || o.getType() == MINUS) {
+                    interpreter.stackLevelInterpretation.peek().add(o);
                     o = read();
                 }
                 else {
@@ -257,6 +262,7 @@ public class Sinta{
             b = viraj5();
             if (b == false) {
                 if (o.getType() == SLASH || o.getType() == STAR || o.getType() == PROC) {
+                    interpreter.stackLevelInterpretation.peek().add(o);
                     o = read();
                 }
                 else {
@@ -277,10 +283,12 @@ public class Sinta{
     boolean viraj6() {
         boolean b = false;
         if (o.getType() == OPEN_CIRCLE) {
+            interpreter.stackLevelInterpretation.peek().add(o);
             o = read();
             b = viraj();
             if (b == false) {
                 if (o.getType() == CLOSE_CIRCLE) {
+                    interpreter.stackLevelInterpretation.peek().add(o);
                     o = read();
                     return false;
                 }
@@ -294,6 +302,7 @@ public class Sinta{
             }
         }
         else if(o.getType() == CONSDEC || o.getType() == CONSHEX) {
+            interpreter.stackLevelInterpretation.peek().add(o);
             o = read();
             return false;
         }
@@ -341,8 +350,12 @@ public class Sinta{
                 return false;
             }
             else {
-                if (tr.findVar(o) == false) {
+                Uno un = tr.findVar(o);
+                if (un == null) {
                     System.out.println("ERROR--" + "unknow var: " + o.getName() + " string: " + o.getStr());
+                }
+                else {
+                    interpreter.stackLevelInterpretation.peek().add(un);
                 }
                 o = read();
                 return false;
@@ -504,8 +517,9 @@ public class Sinta{
                     }
                 }
             }
-            else{
-                if (tr.findVar(o) == false) {
+            else {
+                Uno un = tr.findVar(o);
+                if (un == null) {
                     System.out.println("ERROR--" + "unknow var: " + o.getName() + " string: " + o.getStr());
                 }
                 b = assign();
@@ -588,10 +602,17 @@ public class Sinta{
     }
     boolean assign() {
         if (o.getType() == ID) {
+            Uno result = o;
             o = read();
             if (o.getType() == PLUSASS || o.getType() == MINUSASS || o.getType() == STARASS || o.getType() == PROCASS || o.getType() == SLASHASS || o.getType() == ASSIGN) {
                 o = read();
-                return viraj();
+                List<Uno> output = new LinkedList<>();
+                interpreter.addLevel(output);
+                boolean b = viraj();
+                Object ob = Interpreter.vir(interpreter.stackLevelInterpretation.peek());
+                result.setValue(ob);
+                interpreter.removeLevel();
+                return b;
             }
             else {
                 printERROR(ERASS);

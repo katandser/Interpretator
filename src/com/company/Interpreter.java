@@ -27,7 +27,7 @@ public class Interpreter {
     }
 
     static private int check(int lex) {
-        if (lex == CONSDEC || lex == CONSHEX || lex == VAR) {
+        if (lex == CONSDEC || lex == CONSHEX || lex == ID) {
             return SYMBOL;
         }
         else if (lex == OPEN_CIRCLE) {
@@ -53,36 +53,12 @@ public class Interpreter {
         }
     }
 
-    static void vir() {
-        List <Uno> input = new LinkedList<>();
+    static Object vir(List <Uno> input) {
+        //List <Uno> input = new LinkedList<>();
         List <Uno> output = new LinkedList<>();
         Queue<Uno> stack = Collections.asLifoQueue(new ArrayDeque<>());
 
-
-
         Uno d;
-        input.add(new Uno("3", CONSDEC, 1));
-        input.add(new Uno("--", MINUSMINUS, 1));
-        input.add(new Uno("*", STAR, 1));
-        input.add(new Uno("4", CONSDEC, 1));
-//        input.add(new Uno("*", STAR, 1));
-//        input.add(new Uno("2", CONSDEC, 1));
-//        input.add(new Uno("/", SLASH, 1));
-//        input.add(new Uno("(", OPEN_CIRCLE, 1));
-//        input.add(new Uno("1", CONSDEC, 1));
-//        input.add(new Uno("-", MINUS, 1));
-//        input.add(new Uno("5", CONSDEC, 1));
-//        input.add(new Uno(")", CLOSE_CIRCLE, 1));
-//        input.add(new Uno("*", STAR, 1));
-//        input.add(new Uno("2", CONSDEC, 1));
-//        input.add(new Uno("!=", NOTEQ, 1));
-//        input.add(new Uno("-1", CONSDEC, 1));
-//        input.add(new Uno("<", LESS, 1));
-//        input.add(new Uno("-2", CONSDEC, 1));
-
-
-
-
         input.forEach(element-> System.out.print(element.getName()));
         System.out.println();
 
@@ -130,7 +106,7 @@ public class Interpreter {
             output.add(stack.remove());
         }
         output.forEach(element-> System.out.print(element.getName()));
-        calculation(output);
+        return calculation(output);
     }
 
 
@@ -146,62 +122,6 @@ public class Interpreter {
             return (short) binaryOper((short)in1 , (short)in2 ,oper );
         }
     }
-
-
-    private static Object unaryOperDis(Object in1, int oper) {
-        if (in1 instanceof Long) {
-            return (long) unaryOper((long)in1 , oper );
-        }
-        else if (in1 instanceof Integer) {
-            return (int) unaryOper((int)in1, oper);
-        }
-        else {
-            return (short) unaryOper((short)in1 ,oper );
-        }
-    }
-
-    private static int unaryOper(int in1, int oper) {
-        int result;
-        if (oper == PLUSPLUS) {
-            result = in1 + 1;
-        }
-        else if (oper == MINUSMINUS) {
-            result = in1 - 1;
-        }
-        else {
-            result = 100;
-        }
-        return result;
-    }
-
-    private static long unaryOper(long in1, int oper) {
-        long result;
-        if (oper == PLUSPLUS) {
-            result = in1 + 1;
-        }
-        else if (oper == MINUSMINUS) {
-            result = in1 - 1;
-        }
-        else {
-            result = 100;
-        }
-        return result;
-    }
-    private static short unaryOper(short in1, int oper) {
-        short result;
-        if (oper == PLUSPLUS) {
-            result = (short) (in1 + 1);
-        }
-        else if (oper == MINUSMINUS) {
-            result = (short) (in1 - 1);
-        }
-        else {
-            result = 100;
-        }
-        return result;
-    }
-
-
     private static int binaryOper(int in1, int in2, int oper) {
         int result;
         if (oper == PLUS) {
@@ -214,10 +134,24 @@ public class Interpreter {
             result = in1 * in2;
         }
         else if (oper == PROC) {
-            result = in1 % in2;
+            if (in2 == 0)
+            {
+                System.out.println("INfinit");
+                result = Integer.MAX_VALUE;
+            }
+            else {
+                result = in1 % in2;
+            }
         }
         else if (oper == SLASH) {
-            result = in1 / in2;
+            if (in2 == 0)
+            {
+                System.out.println("INfinit");
+                result = Integer.MAX_VALUE;
+            }
+            else {
+                result = in1 % in2;
+            }
         }
         else if (oper == EQ) {
             if (in1 == in2){
@@ -285,10 +219,24 @@ public class Interpreter {
             result = in1 * in2;
         }
         else if (oper == PROC) {
-            result = in1 % in2;
+            if (in2 == 0)
+            {
+                System.out.println("INfinit");
+                result = Integer.MAX_VALUE;
+            }
+            else {
+                result = in1 % in2;
+            }
         }
         else if (oper == SLASH) {
-            result = in1 / in2;
+            if (in2 == 0)
+            {
+                System.out.println("INfinit");
+                result = Long.MAX_VALUE;
+            }
+            else {
+                result = in1 / in2;
+            }
         }
         else if (oper == EQ) {
             if (in1 == in2){
@@ -356,10 +304,24 @@ public class Interpreter {
             result = (short) (in1 * in2);
         }
         else if (oper == PROC) {
-            result = (short) (in1 % in2);
+            if (in2 == 0)
+            {
+                System.out.println("INfinit");
+                result = Short.MAX_VALUE;
+            }
+            else {
+                result = (short) (in1 % in2);
+            }
         }
         else if (oper == SLASH) {
-            result = (short) (in1 / in2);
+            if (in2 == 0)
+            {
+                System.out.println("INfinit");
+                result = Short.MAX_VALUE;
+            }
+            else {
+                result = (short) (in1 / in2);
+            }
         }
         else if (oper == EQ) {
             if (in1 == in2){
@@ -419,28 +381,22 @@ public class Interpreter {
         Object f = binaryOperDis(stack.remove().getValue() , stack.remove().getValue(), i.getType());
         stack.add(new Uno(String.valueOf(f)));
     }
-    private static void disUnary(Uno i, Queue<Uno> stack) {
-        Object f = unaryOperDis(stack.remove().getValue() , i.getType());
-        stack.add(new Uno(String.valueOf(f)));
-    }
 
 
-    private static int calculation(List <Uno> input) {
+    private static Object calculation(List <Uno> input) {
         Queue<Uno> stack = Collections.asLifoQueue(new ArrayDeque<>());
         for (Uno i: input) {
             int type = i.getType();
             if (check(type) == SYMBOL) {
                 stack.add(i);
             }
-            else if (check(type) == POST) {
-;               disUnary(i,stack);
-            }
             else {
                 disBinary(i,stack);
             }
         }
-        System.out.println();
-        System.out.println(stack.peek().getValue());
-        return 1;
+        return stack.peek().getValue();
+//        System.out.println();
+//        System.out.println(stack.peek().getValue());
+//        stack.clear();
     }
 }

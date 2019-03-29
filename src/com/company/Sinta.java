@@ -614,43 +614,62 @@ public class Sinta{
     boolean funcFor() {
         boolean b;
 
-
         if (o.getType() == OPEN_CIRCLE) {
             o = read();
             b = assign();
+            int prefFunc, postFunc;
             if (o.getType() == DOTCOM && b == false) {
+                prefFunc = sc.getPC();
                 o = read();
             }
             else {
                 return true;
             }
-
 
             List<Uno> output = new LinkedList<>();
             interpreter.addLevel(output);
             b = viraj();
-            Object ob = Interpreter.vir(interpreter.stackLevelInterpretation.peek());
-            //result.setValue(ob);
+            //Object ob = Interpreter.vir(interpreter.stackLevelInterpretation.peek());
             interpreter.removeLevel();
             if (o.getType() == DOTCOM && b == false) {
+                postFunc = sc.getPC();
                 o = read();
             }
             else {
                 return true;
             }
-            b = assign();
-            if (o.getType() == CLOSE_CIRCLE && b == false) {
 
-                for (int i = 0; i < 4; i++) {
-                    interpreter.pushPC(sc.getPC());
+
+            interpreter.flagInterpretation = false;
+            b = assign();
+            interpreter.flagInterpretation = true;
+
+            if (b == false && o.getType() == CLOSE_CIRCLE) {
+                o = read();
+                int body = sc.getPC();
+                //interpreter.pushPC(sc.getPC());
+                while (true) {
+                    sc.i = prefFunc;
                     o = read();
-                    b = body();
-                    if (i < 3)
-                        sc.setPC(interpreter.pullPC());
-                    else
-                        interpreter.pullPC();
+                    output = new LinkedList<>();
+                    interpreter.addLevel(output);
+                    b = viraj();
+                    Object ob = Interpreter.vir(interpreter.stackLevelInterpretation.peek());
+                    interpreter.removeLevel();
+                    sc.setPC(body);
+                    if ((int)ob != 0) {
+                        o = read();
+                        b = body();
+                        int current = sc.getPC();
+                        sc.i = postFunc;
+                        assign();
+                        sc.i = current;
+
+                    }
+                    else {
+                        ;
+                    }
                 }
-                return b;
             }
             else {
                 return true;
@@ -674,8 +693,10 @@ public class Sinta{
                 List<Uno> output = new LinkedList<>();
                 interpreter.addLevel(output);
                 boolean b = viraj();
-                Object ob = Interpreter.vir(interpreter.stackLevelInterpretation.peek());
-                un.setValue(ob,type);
+                if (interpreter.flagInterpretation == true) {
+                    Object ob = Interpreter.vir(interpreter.stackLevelInterpretation.peek());
+                    un.setValue(ob,type);
+                }
                 interpreter.removeLevel();
                 return b;
             }

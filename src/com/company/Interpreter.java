@@ -16,16 +16,20 @@ public class Interpreter {
     private static final int OPER_LVL_2 = 7;
     private static final int OPER_LVL_3 = 8;
     private static final int OPER_LVL_4 = 9;
-    //private boolean flagInterpretation = true;
+    public boolean flagInterpretation = true;
 
     Queue<Integer> stackPC = Collections.asLifoQueue(new ArrayDeque<>());
 
     Queue <List <Uno> > stackLevelInterpretation = Collections.asLifoQueue(new ArrayDeque<>());
     void addLevel(List <Uno> list) {
-        stackLevelInterpretation.add(list);
+        if (flagInterpretation == true) {
+            stackLevelInterpretation.add(list);
+        }
     }
     void removeLevel() {
-        stackLevelInterpretation.remove();
+        if (flagInterpretation == true) {
+            stackLevelInterpretation.remove();
+        }
     }
 
 
@@ -35,20 +39,24 @@ public class Interpreter {
     public int pullPC() {
         return stackPC.remove();
     }
-
+    public int getPeek() {
+        return stackPC.peek();
+    }
 
 
     public void addElement(Uno o) {
-        if (o.getValue() == null && o.getType() == ID) {
-            System.out.println("\nNon init var: " + o.getName() + " in string: " + o.getStr());
-            System.exit(1);
+        if (flagInterpretation == true) {
+            if (o.getValue() == null && o.getType() == ID) {
+                System.out.println("\nNon init var: " + o.getName() + " in string: " + o.getStr());
+                System.exit(1);
+            }
+            Uno un = new Uno();
+            un.setValue(o.getValue());
+            un.setType(o.getType());
+            un.setName(o.getName());
+            un.setStr(o.getStr());
+            stackLevelInterpretation.peek().add(un);
         }
-        Uno un = new Uno();
-        un.setValue(o.getValue());
-        un.setType(o.getType());
-        un.setName(o.getName());
-        un.setStr(o.getStr());
-        stackLevelInterpretation.peek().add(un);
     }
     public void inc(Uno un) {
         Object ob = un.getValue();

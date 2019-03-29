@@ -160,6 +160,8 @@ public class Tree {
         return null;
     }
 
+
+
     void view(Node n){
         if (n.getType() != Scan.BLACK) {
             for (int i = 0; i < depth; i++) {

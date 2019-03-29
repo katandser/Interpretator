@@ -16,6 +16,9 @@ public class Interpreter {
     private static final int OPER_LVL_2 = 7;
     private static final int OPER_LVL_3 = 8;
     private static final int OPER_LVL_4 = 9;
+    //private boolean flagInterpretation = true;
+
+    Queue<Integer> stackPC = Collections.asLifoQueue(new ArrayDeque<>());
 
     Queue <List <Uno> > stackLevelInterpretation = Collections.asLifoQueue(new ArrayDeque<>());
     void addLevel(List <Uno> list) {
@@ -25,15 +28,26 @@ public class Interpreter {
         stackLevelInterpretation.remove();
     }
 
+
+    public void pushPC(int i) {
+        stackPC.add(i);
+    }
+    public int pullPC() {
+        return stackPC.remove();
+    }
+
+
+
     public void addElement(Uno o) {
         if (o.getValue() == null && o.getType() == ID) {
-            System.out.println("\nNon init var: " + o.getName());
+            System.out.println("\nNon init var: " + o.getName() + " in string: " + o.getStr());
             System.exit(1);
         }
         Uno un = new Uno();
         un.setValue(o.getValue());
         un.setType(o.getType());
         un.setName(o.getName());
+        un.setStr(o.getStr());
         stackLevelInterpretation.peek().add(un);
     }
     public void inc(Uno un) {
@@ -62,7 +76,6 @@ public class Interpreter {
             un.setValue((Short)ob - 1);
         }
     }
-
 
     static private int check(int lex) {
         if (lex == CONSDEC || lex == CONSHEX || lex == ID) {

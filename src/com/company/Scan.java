@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.*;
 import java.util.Scanner;
 
+import static com.company.Scan.*;
+
 class Uno {
     private String name;
     private int str;
@@ -41,6 +43,93 @@ class Uno {
         if (value instanceof Long) {
             this.value = value;
         }
+    }
+    public void setValue(Object value, int type) {
+
+        if (this.value == null && type != ASSIGN) {
+            System.out.println("\nValue not anable" + name  +" in string: " + str);
+            System.exit(1);
+        }
+        if (type == ASSIGN) {
+            if (value instanceof Integer) {
+                this.value = value;
+            }
+            if (value instanceof Short) {
+                this.value = value;
+            }
+            if (value instanceof Long) {
+                this.value = value;
+            }
+        }
+        else if(type == PLUSASS) {
+            if (this.value instanceof Long) {
+                this.value = (long)this.value + (long)value;
+            }
+            else if (this.value instanceof Integer) {
+                this.value = (int)this.value + (int)value;
+            }
+            else {
+                this.value = (short)this.value + (short)value;
+            }
+
+        }
+        else if(type == MINUSASS) {
+            if (this.value instanceof Long) {
+                this.value = (long)this.value - (long)value;
+            }
+            else if (this.value instanceof Integer) {
+                this.value = (int)this.value - (int)value;
+            }
+            else {
+                this.value = (short)this.value - (short)value;
+            }
+        }
+        else if(type == STARASS) {
+            if (this.value instanceof Long) {
+                this.value = (long)this.value * (long)value;
+            }
+            else if (this.value instanceof Integer) {
+                this.value = (int)this.value * (int)value;
+            }
+            else {
+                this.value = (short)this.value * (short)value;
+            }
+        }
+        else if(type == PROCASS) {
+            if ((int)value == 0) {
+                System.out.println("\nДеление на 0" + name  +" in string: " + str);
+                System.exit(1);
+            }
+            if (this.value instanceof Long) {
+                this.value = (long)this.value % (long)value;
+            }
+            else if (this.value instanceof Integer) {
+                this.value = (int)this.value % (int)value;
+            }
+            else {
+                this.value = (short)this.value % (short)value;
+            }
+
+        }
+        else if(type == SLASHASS) {
+            if ((int)value == 0) {
+                System.out.println("\nДеление на 0" + name  +" in string: " + str);
+                System.exit(1);
+            }
+            if (this.value instanceof Long) {
+                this.value = (long)this.value / (long)value;
+            }
+            else if (this.value instanceof Integer) {
+                this.value = (int)this.value / (int)value;
+            }
+            else {
+                this.value = (short)this.value / (short)value;
+            }
+        }
+        else {
+            System.exit(1);
+        }
+
 
     }
 
@@ -71,7 +160,7 @@ class Uno {
             case Scan.CLOSE_CIRCLE : return "CLOSE_CIRCLE";
             case Scan.OPEN_F : return "OPEN_F";
             case Scan.CLOSE_F : return "CLOSE_F";
-            case Scan.ASSIGN : return "ASSIGN";
+            case ASSIGN : return "ASSIGN";
             case Scan.PLUSASS : return "PLUSASS";
             case Scan.MINUSASS : return "MINUSASS";
             case Scan.STARASS : return "STARASS";
@@ -161,6 +250,15 @@ public class Scan {
     public int i;
     int str;
     Scan(){i = 0;}
+
+    public void setPC(int pc) {
+        i = pc;
+    }
+    public int getPC(){
+        return i;
+    }
+
+
 
     public void incStr() {
         if (s.charAt(i) == '\n'){

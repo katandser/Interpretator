@@ -79,41 +79,49 @@ public class Sinta{
         return true;
     }
 
-    boolean cheakType() {
+    boolean cheak (int type) {
+            if (type == LONG || type == LONGLONG || type == SHORT || type == SHORTINT) {
+                return false;
+            }
+            else {
+                return true;
+            }
+    }
+
+
+    int cheakType() {
         if (o.getType() == LONG) {
             o = read();
             if (o.getType() == LONG){
                 o = read();
-                lastType = LONGLONG;
-                return false;
+                return LONG;
             }
-            lastType = LONG;
-            return false;
+            return LONGLONG;
         }
         else if(o.getType() == SHORT) {
             o = read();
             if (o.getType() == INT){
                 o = read();
-                lastType = SHORTINT;
-                return false;
+                return SHORT;
             }
-            lastType = SHORT;
-            return false;
+            return SHORTINT;
         }
         else {
-            return true;
+            return ERROR;
         }
     }
 
+
     boolean in()
     {
-        if (cheakType() == false && o.getType() == ID) {
+        int type = cheakType();
+        if (cheak(type) == false && o.getType() == ID) {
             uprO = uprRead();
             if (uprO.getType() == OPEN_CIRCLE) {
-                return function();
+                return function(type);
             }
             else {
-                return date();
+                return date(type);
             }
         }
         else {
@@ -122,10 +130,10 @@ public class Sinta{
         }
     }
 
-    boolean date() {
+    boolean date(int type) {
         Uno un = tr.findVar(o);
         if (un == null) {
-            tr.addLeft(o,VAR, lastType);
+            tr.addLeft(o,VAR, type);
         }
         else {
             System.out.println("ERROR var '" + o.getName() +  "' is use in string: " + o.getStr());
@@ -134,7 +142,7 @@ public class Sinta{
             if (o.getType() == COM) {
                 o = read();
                 if (o.getType() == ID) {
-                    return date();
+                    return date(type);
                 }
                 else {
                     printERROR(ERID);
@@ -182,9 +190,10 @@ public class Sinta{
         }
     }
 
-    boolean function() {
+    boolean function(int type) {
+
         if (tr.findFunc(o) == false) {
-            tr.addLeft(o, FUNCTION, lastType);
+            tr.addLeft(o, FUNCTION, type);
         }
         else{
             System.out.println("ERROR func '" + o.getName() +  "' is use in string: " + o.getStr());
@@ -423,10 +432,11 @@ public class Sinta{
     }
 
     boolean spisPerem() {
-        if (cheakType() == false) {
+        int type = cheakType();
+        if (cheak(type) == false) {
             if (o.getType() == ID) {
                 arrayList.add(o);
-                arrayType.add(lastType);
+                arrayType.add(type);
                 o = read();
                 if (o.getType() == COM) {
                     o = read();
@@ -467,8 +477,9 @@ public class Sinta{
             }
             o = read();
             while(b == false) {
-                if (cheakType() == false) {
-                    b = date();
+                int type = cheakType();
+                if (cheak(type) == false) {
+                    b = date(type);
                 }
                 else {
                     b = oper();
@@ -545,10 +556,6 @@ public class Sinta{
                 }
             }
             else {
-                Uno un = tr.findVar(o);
-                if (un == null) {
-                    System.out.println("ERROR--" + "unknow var: " + o.getName() + " string: " + o.getStr());
-                }
                 b = assign();
                 if (b == false) {
 
@@ -568,7 +575,15 @@ public class Sinta{
         }
         else if(o.getType() == RETURN) {
             o = read();
+
+            List<Uno> output = new LinkedList<>();
+            interpreter.addLevel(output);
             b = viraj();
+            Object ob = Interpreter.vir(interpreter.stackLevelInterpretation.peek());
+            //result.setValue(ob);
+            //System.out.println(ob);
+            interpreter.removeLevel();
+
             if (b == false) {
                 if (o.getType() == DOTCOM) {
                     o = read();
@@ -598,16 +613,25 @@ public class Sinta{
 
     boolean funcFor() {
         boolean b;
+
+
         if (o.getType() == OPEN_CIRCLE) {
             o = read();
             b = assign();
             if (o.getType() == DOTCOM && b == false) {
                 o = read();
             }
-            else{
+            else {
                 return true;
             }
+
+
+            List<Uno> output = new LinkedList<>();
+            interpreter.addLevel(output);
             b = viraj();
+            Object ob = Interpreter.vir(interpreter.stackLevelInterpretation.peek());
+            //result.setValue(ob);
+            interpreter.removeLevel();
             if (o.getType() == DOTCOM && b == false) {
                 o = read();
             }
@@ -616,8 +640,17 @@ public class Sinta{
             }
             b = assign();
             if (o.getType() == CLOSE_CIRCLE && b == false) {
-                o = read();
-                return body();
+
+                for (int i = 0; i < 4; i++) {
+                    interpreter.pushPC(sc.getPC());
+                    o = read();
+                    b = body();
+                    if (i < 3)
+                        sc.setPC(interpreter.pullPC());
+                    else
+                        interpreter.pullPC();
+                }
+                return b;
             }
             else {
                 return true;
@@ -629,15 +662,20 @@ public class Sinta{
     }
     boolean assign() {
         if (o.getType() == ID) {
-            Uno result = o;
+            Uno un = tr.findVar(o);
+            if (un == null) {
+                System.out.println("ERROR--" + "unknow var: " + o.getName() + " string: " + o.getStr());
+            }
+            //Uno result = o;
             o = read();
-            if (o.getType() == PLUSASS || o.getType() == MINUSASS || o.getType() == STARASS || o.getType() == PROCASS || o.getType() == SLASHASS || o.getType() == ASSIGN) {
+            int type = o.getType();
+            if (type == PLUSASS || type == MINUSASS || type == STARASS || type == PROCASS || type == SLASHASS || type == ASSIGN) {
                 o = read();
                 List<Uno> output = new LinkedList<>();
                 interpreter.addLevel(output);
                 boolean b = viraj();
                 Object ob = Interpreter.vir(interpreter.stackLevelInterpretation.peek());
-                result.setValue(ob);
+                un.setValue(ob,type);
                 interpreter.removeLevel();
                 return b;
             }

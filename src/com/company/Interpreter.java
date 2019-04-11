@@ -1,6 +1,6 @@
 package com.company;
 
-import com.sun.source.util.Plugin;
+//import com.sun.source.util.Plugin;
 
 import java.util.*;
 
@@ -34,13 +34,15 @@ public class Interpreter {
 
 
     public void pushPC(int i) {
-        stackPC.add(i);
+        if (flagInterpretation == true) {
+            stackPC.add(i);
+        }
     }
     public int pullPC() {
-        return stackPC.remove();
+            return stackPC.remove();
     }
     public int getPeek() {
-        return stackPC.peek();
+            return stackPC.peek();
     }
 
 
@@ -59,29 +61,27 @@ public class Interpreter {
         }
     }
     public void inc(Uno un) {
-        Object ob = un.getValue();
-        if (ob instanceof Long) {
-            un.setValue((Long)ob + 1);
-        }
-        else if (ob instanceof Integer)
-        {
-            un.setValue((Integer)ob + 1);
-        }
-        else {
-            un.setValue((Short)ob + 1);
+        if (flagInterpretation == true) {
+            Object ob = un.getValue();
+            if (ob instanceof Long) {
+                un.setValue((Long) ob + 1);
+            } else if (ob instanceof Integer) {
+                un.setValue((Integer) ob + 1);
+            } else {
+                un.setValue((Short) ob + 1);
+            }
         }
     }
     public void dec(Uno un) {
-        Object ob = un.getValue();
-        if (ob instanceof Long) {
-            un.setValue((Long)ob - 1);
-        }
-        else if (ob instanceof Integer)
-        {
-            un.setValue((Integer)ob - 1);
-        }
-        else {
-            un.setValue((Short)ob - 1);
+        if (flagInterpretation == true) {
+            Object ob = un.getValue();
+            if (ob instanceof Long) {
+                un.setValue((Long) ob - 1);
+            } else if (ob instanceof Integer) {
+                un.setValue((Integer) ob - 1);
+            } else {
+                un.setValue((Short) ob - 1);
+            }
         }
     }
 

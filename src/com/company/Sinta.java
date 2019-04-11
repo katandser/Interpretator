@@ -625,11 +625,9 @@ public class Sinta{
             else {
                 return true;
             }
-
             List<Uno> output = new LinkedList<>();
             interpreter.addLevel(output);
             b = viraj();
-            //Object ob = Interpreter.vir(interpreter.stackLevelInterpretation.peek());
             interpreter.removeLevel();
             if (o.getType() == DOTCOM && b == false) {
                 postFunc = sc.getPC();
@@ -639,14 +637,17 @@ public class Sinta{
                 return true;
             }
 
-
-            interpreter.flagInterpretation = false;
-            b = assign();
-            interpreter.flagInterpretation = true;
-
-            if (b == false && o.getType() == CLOSE_CIRCLE) {
+            if (interpreter.flagInterpretation == false) {
+                b = assign();
                 o = read();
+                return body();
+            }
+            else if (b == false) {
+                interpreter.flagInterpretation = false;
+                b = assign();
+                interpreter.flagInterpretation = true;
                 int body = sc.getPC();
+                o = read();
                 //interpreter.pushPC(sc.getPC());
                 while (true) {
                     sc.i = prefFunc;
@@ -662,12 +663,16 @@ public class Sinta{
                         b = body();
                         int current = sc.getPC();
                         sc.i = postFunc;
+                        o = read();
                         assign();
                         sc.i = current;
-
                     }
                     else {
-                        ;
+                        interpreter.flagInterpretation = false;
+                        o = read();
+                        body();
+                        interpreter.flagInterpretation = true;
+                        return false;
                     }
                 }
             }
@@ -693,7 +698,7 @@ public class Sinta{
                 List<Uno> output = new LinkedList<>();
                 interpreter.addLevel(output);
                 boolean b = viraj();
-                if (interpreter.flagInterpretation == true) {
+                if (interpreter.flagInterpretation ) {
                     Object ob = Interpreter.vir(interpreter.stackLevelInterpretation.peek());
                     un.setValue(ob,type);
                 }

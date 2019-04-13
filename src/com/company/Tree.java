@@ -3,6 +3,8 @@ package com.company;
 import java.util.LinkedList;
 import java.util.List;
 
+import static com.company.Scan.*;
+
 class Node{
     private Node left;
     private Node right;
@@ -10,7 +12,9 @@ class Node{
     private Uno elem;
     private int reType;
     private int type;
+    int i = 0;
     private List<Integer> listType = new LinkedList<>();
+    private List<Uno> listEl = new LinkedList<>();
 
     public void setElem(Uno elem) {
         this.elem = elem;
@@ -43,6 +47,27 @@ class Node{
     public void setReType(int reType) {
         this.reType = reType;
     }
+
+    public void addElUno(Uno el) {listEl.add(el); }
+
+    public Uno getElUno(int i) {return listEl.get(i); }
+
+    public void setValueElem(Object el, int pos) {
+        if (listType.get(i) == SHORT) {
+            listEl.get(pos).setValue((byte)el);
+        }
+        else if (listType.get(i) == LONG) {
+            listEl.get(pos).setValue((int)el);
+        }
+        else if (listType.get(i) == LONGLONG){
+            listEl.get(pos).setValue((long)el);
+        }
+        else {
+            listEl.get(pos).setValue(null);
+        }
+
+    }
+
 
     public Node getLeft() {
         return left;
@@ -89,6 +114,7 @@ public class Tree {
     private Node current;
     private static int depth;
 
+
     public Node getCurrent() {
         return current;
     }
@@ -97,7 +123,11 @@ public class Tree {
         return root;
     }
 
-    public void addLeft(Uno elem, int type ,int reType){
+    public void setCurrent(Node current) {
+        this.current = current;
+    }
+
+    public void addLeft(Uno elem, int type , int reType){
         if (root == null){
             root = new Node(null,elem,type ,reType);
             current = root;

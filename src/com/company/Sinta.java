@@ -10,20 +10,21 @@ import static com.company.Scan.*;
 import static com.company.Scan.BLACK;
 import static com.company.Scan.VAR;
 
-public class Sinta{
-    static final int ERTYPE = 0;
-    static final int ERID = 1;
-    static final int ERDATE  = 2;
-    static final int ERENDVIR = 3;
-    static final int EREX = 4;
-    static final int EROPF = 5;
-    static final int ERFPAR = 6;
-    static final int ERCOMORDOTCOM = 7;
-    static final int ERVOID = 8;
-    static final int ERASS = 9;
-    static final int EREND = 10;
+class Sinta{
+    private static final int ERTYPE = 0;
+    private static final int ERID  = 1;
+    private static final int ERDATE  = 2;
+    private static final int ERENDVIR = 3;
+    private static final int EREX = 4;
+    private static final int EROPF = 5;
+    private static final int ERFPAR = 6;
+    private static final int ERCOMORDOTCOM = 7;
+    private static final int ERVOID = 8;
+    private static final int ERASS = 9;
+    private static final int EREND = 10;
     boolean error = false;
     int last;
+    String startFunc = "ff";
     ArrayList<Uno> arrayList;
     ArrayList <Integer> arrayType;
     int lastType;
@@ -115,9 +116,15 @@ public class Sinta{
     boolean in()
     {
         int type = cheakType();
-        if (cheak(type) == false && o.getType() == ID) {
+        if (!cheak(type) && o.getType() == ID) {
             uprO = uprRead();
             if (uprO.getType() == OPEN_CIRCLE) {
+                if (o.getName().equals(startFunc)) {
+                    interpreter.flagInterpretation = true;
+                }
+                else {
+                    interpreter.flagInterpretation = false;
+                }
                 return function(type);
             }
             else {
@@ -169,13 +176,7 @@ public class Sinta{
             Uno result = o;
             o = read();
             o = read();
-            List<Uno> output = new LinkedList<>();
-            interpreter.addLevel(output);
-            boolean b = viraj();
-            Object ob = Interpreter.vir(interpreter.stackLevelInterpretation.peek());
-            result.setValue(ob);
-            interpreter.removeLevel();
-            return b;
+            return interViraj(result, ASSIGN);
         }
         else if (uprO.getType() == DOTCOM) {
             o = read();
@@ -190,23 +191,24 @@ public class Sinta{
         }
     }
 
-    boolean function(int type) {
+    private boolean function(int type) {
 
         if (tr.findFunc(o) == false) {
             tr.addLeft(o, FUNCTION, type);
         }
-        else{
+        else {
             System.out.println("ERROR func '" + o.getName() +  "' is use in string: " + o.getStr());
         }
         o = read();
         o = read();
         if (o.getType() == CLOSE_CIRCLE) {
+            tr.getCurrent().i = sc.getPC();
             o = read();
-            return body();
+            return body(true);
         }
         return spisPerem();
     }
-    boolean viraj() {
+    private boolean viraj() {
 
         boolean b = false;
         while (b == false) {
@@ -424,7 +426,7 @@ public class Sinta{
     }
 
     private boolean cheackArgsFunc(Uno ob, int count, Node nd) {
-        o = read();
+        //o = read();
         if (nd.getListType().size() != count) {
             System.out.println("ER: func " + ob.getName() + " have: " + count + " args, need " + nd.getListType().size() + " in string " + ob.getStr());
         }
@@ -443,8 +445,9 @@ public class Sinta{
                     return spisPerem();
                 }
                 else if (o.getType() == CLOSE_CIRCLE) {
+                    tr.getCurrent().i = sc.getPC();
                     o = read();
-                    boolean b = body();
+                    boolean b = body(true);
                 }
                 else {
                     printERROR(ERFPAR);
@@ -462,18 +465,21 @@ public class Sinta{
         }
         return false;
     }
-    boolean body() {
+    boolean body(boolean bool) {
         boolean b = false;
         if (o.getType() == OPEN_F) {
             for (int i = 0; i < arrayList.size(); i++) {
-                tr.getCurrent().addElem(arrayType.get(i));//arrayList.get(i).getType());
+                tr.getCurrent().addElem(arrayType.get(i));
+                tr.getCurrent().addElUno(arrayList.get(i));//arrayList.get(i).getType());
             }
             //tr.getCurrent().setListType(arrayList.listIterator().next());
-            tr.addRight(o,BLACK,BLACK);
-            while (arrayList.size() > 0) {
-                tr.addLeft(arrayList.get(0),VAR, arrayType.get(0));
-                arrayList.remove(0);
-                arrayType.remove(0);
+            if (bool == true) {
+                tr.addRight(o,BLACK,BLACK);
+                while (arrayList.size() > 0) {
+                    tr.addLeft(arrayList.get(0),VAR, arrayType.get(0));
+                    arrayList.remove(0);
+                    arrayType.remove(0);
+                }
             }
             o = read();
             while(b == false) {
@@ -505,9 +511,42 @@ public class Sinta{
     boolean oper() {
         boolean b = false;
         if (o.getType() == OPEN_F) {
-            return body();
+            return body(true);
         }
         else if (o.getType() == DOTCOM) {
+            o = read();
+            return false;
+        }
+        else if (o.getType() == PRINT || o.getType() == PRINTLN) {
+            Uno pr = o;
+            o = read();
+            if (o.getType() != OPEN_CIRCLE) {
+                return true;
+            }
+            o = read();
+            if (o.getType() == CLOSE_CIRCLE) {
+                if (interpreter.flagInterpretation == true) {
+                    if (pr.getType() == PRINT) {
+                        System.out.print(" ");
+                    }
+                    else {
+                        System.out.println();
+                    }
+                }
+            }
+            else {
+                Uno un = new Uno();
+                interViraj(un);
+                if (interpreter.flagInterpretation == true) {
+                    if (pr.getType() == PRINT) {
+                        System.out.print(un.getValue());
+                    }
+                    else {
+                        System.out.println(un.getValue());
+                    }
+                }
+            }
+            o = read();
             o = read();
             return false;
         }
@@ -519,25 +558,40 @@ public class Sinta{
             Uno ob = o;
             uprO = uprRead();
             if (uprO.getType() == OPEN_CIRCLE) {
-                if (tr.findFunc(o) == false) {
+                Node nd = tr.findFuncReNd(o);
+                if (nd == null) {
                     System.out.println("ERROR--" + "unknow function: " + o.getName() + " string: " + o.getStr());
                 }
-                Node nd = tr.findFuncReNd(o);
                 o = read();
-                o = read();
+                uprO = uprRead();
                 int count = 0;
-                if (o.getType() == CLOSE_CIRCLE) {
+                if (uprO.getType() == CLOSE_CIRCLE) {
                     return cheackArgsFunc(ob, count, nd);
                 }
                 else {
-                    while (b == false) {
+                    o = read();
+                    for (int i = 0; b == false; i++) {
                         count++;
-                        b = viraj();
+                        b = interViraj(nd.getElUno(i));
                         if (b == false) {
                             if (o.getType() == CLOSE_CIRCLE) {
                                 o = read();
                                 if (o.getType() == DOTCOM) {
-                                    return cheackArgsFunc(ob, count, nd);
+                                    boolean ch = cheackArgsFunc(ob, count, nd);
+                                    int pc = sc.getPC();
+                                    sc.setPC(nd.i);
+                                    o = read();
+                                    Node save = tr.getCurrent();
+                                    tr.setCurrent(nd);
+                                    tr.setCurrent(tr.getCurrent().getRight());
+                                    for (int j = 0; j < count; j++ ) {
+                                        tr.setCurrent(tr.getCurrent().getLeft());
+                                    }
+                                    body(false);
+                                    tr.setCurrent(save);
+                                    sc.setPC(pc);
+                                    o = read();
+                                    return ch;
                                 }
                                 else {
                                     printERROR(ERENDVIR);
@@ -579,7 +633,9 @@ public class Sinta{
             List<Uno> output = new LinkedList<>();
             interpreter.addLevel(output);
             b = viraj();
-            Object ob = Interpreter.vir(interpreter.stackLevelInterpretation.peek());
+            if (interpreter.flagInterpretation) {
+                Object ob = Interpreter.vir(interpreter.stackLevelInterpretation.peek());
+            }
             //result.setValue(ob);
             //System.out.println(ob);
             interpreter.removeLevel();
@@ -640,7 +696,7 @@ public class Sinta{
             if (interpreter.flagInterpretation == false) {
                 b = assign();
                 o = read();
-                return body();
+                return body(true);
             }
             else if (b == false) {
                 interpreter.flagInterpretation = false;
@@ -660,7 +716,7 @@ public class Sinta{
                     sc.setPC(body);
                     if ((int)ob != 0) {
                         o = read();
-                        b = body();
+                        b = body(true);
                         int current = sc.getPC();
                         sc.i = postFunc;
                         o = read();
@@ -670,7 +726,7 @@ public class Sinta{
                     else {
                         interpreter.flagInterpretation = false;
                         o = read();
-                        body();
+                        body(true);
                         interpreter.flagInterpretation = true;
                         return false;
                     }
@@ -695,15 +751,7 @@ public class Sinta{
             int type = o.getType();
             if (type == PLUSASS || type == MINUSASS || type == STARASS || type == PROCASS || type == SLASHASS || type == ASSIGN) {
                 o = read();
-                List<Uno> output = new LinkedList<>();
-                interpreter.addLevel(output);
-                boolean b = viraj();
-                if (interpreter.flagInterpretation ) {
-                    Object ob = Interpreter.vir(interpreter.stackLevelInterpretation.peek());
-                    un.setValue(ob,type);
-                }
-                interpreter.removeLevel();
-                return b;
+                return interViraj(un, type);
             }
             else {
                 printERROR(ERASS);
@@ -715,8 +763,37 @@ public class Sinta{
             return true;
         }
     }
+
+    private boolean interViraj(Uno un, int type) {
+        //o = read();
+        List<Uno> output = new LinkedList<>();
+        interpreter.addLevel(output);
+        boolean b = viraj();
+        if (interpreter.flagInterpretation ) {
+            Object ob = Interpreter.vir(interpreter.stackLevelInterpretation.peek());
+            un.setValue(ob,type);
+        }
+        interpreter.removeLevel();
+        return b;
+    }
+
+    private boolean interViraj(Uno un) {
+        //o = read();
+        List<Uno> output = new LinkedList<>();
+        interpreter.addLevel(output);
+        boolean b = viraj();
+        if (interpreter.flagInterpretation ) {
+            Object ob = Interpreter.vir(interpreter.stackLevelInterpretation.peek());
+            un.setValue(ob);
+        }
+        interpreter.removeLevel();
+        return b;
+    }
+
+
+
     void printERROR(int er) {
-        if (error == false) {
+        if (!error) {
             error = true;
             switch (er)
             {

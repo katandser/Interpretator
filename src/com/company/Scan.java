@@ -246,6 +246,8 @@ public class Scan {
     static final int SHORTINT = 38;
     static final int VAR = 39;
     static final int FUNCTION = 40;
+    static final int PRINT = 41;
+    static final int PRINTLN = 42;
     public String s;
     public int i;
     int str;
@@ -355,6 +357,10 @@ public class Scan {
                     return new Uno(s.substring(u,i),FOR,str);
                 if (s.substring(u,i).equals("return"))
                     return new Uno(s.substring(u,i),RETURN,str);
+                if (s.substring(u,i).equals("println"))
+                    return new Uno(s.substring(u,i),PRINTLN,str);
+                if (s.substring(u,i).equals("print"))
+                    return new Uno(s.substring(u,i),PRINT,str);
                 return new Uno(s.substring(u,i),ID,str);
             }
             else {

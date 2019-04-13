@@ -12,12 +12,7 @@ public class Main {
         while (sin.o.getType() != sin.sc.END && b == false)
         {
             b = sin.in();
-            if (sin.o.getType() == sin.sc.END)
-            {
-                sin.last = sin.sc.i;
-                System.out.println("win");
-            }
         }
-        sin.tr.view(sin.tr.getRoot());
+        //sin.tr.view(sin.tr.getRoot());
     }
 }

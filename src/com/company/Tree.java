@@ -65,7 +65,6 @@ class Node{
         else {
             listEl.get(pos).setValue(null);
         }
-
     }
 
 

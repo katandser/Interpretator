@@ -578,18 +578,22 @@ class Sinta{
                                 o = read();
                                 if (o.getType() == DOTCOM) {
                                     boolean ch = cheackArgsFunc(ob, count, nd);
-                                    int pc = sc.getPC();
-                                    sc.setPC(nd.i);
-                                    o = read();
-                                    Node save = tr.getCurrent();
-                                    tr.setCurrent(nd);
-                                    tr.setCurrent(tr.getCurrent().getRight());
-                                    for (int j = 0; j < count; j++ ) {
-                                        tr.setCurrent(tr.getCurrent().getLeft());
+                                    if (interpreter.flagInterpretation) {
+                                        interpreter.pushPC(sc.getPC());
+                                        sc.setPC(nd.i);
+                                        o = read();
+                                        Node save = tr.getCurrent();
+                                        tr.setCurrent(nd);
+                                        tr.setCurrent(tr.getCurrent().getRight());
+                                        for (int j = 0; j < count; j++ ) {
+                                            tr.setCurrent(tr.getCurrent().getLeft());
+                                        }
+                                        if (interpreter.stackPC.size() < 30)
+                                        body(false);
+                                        tr.setCurrent(save);
+                                        sc.setPC(interpreter.pullPC());
+                                        interpreter.flagInterpretation = true;
                                     }
-                                    body(false);
-                                    tr.setCurrent(save);
-                                    sc.setPC(pc);
                                     o = read();
                                     return ch;
                                 }
@@ -629,20 +633,20 @@ class Sinta{
         }
         else if(o.getType() == RETURN) {
             o = read();
-
             List<Uno> output = new LinkedList<>();
             interpreter.addLevel(output);
             b = viraj();
             if (interpreter.flagInterpretation) {
                 Object ob = Interpreter.vir(interpreter.stackLevelInterpretation.peek());
             }
-            //result.setValue(ob);
+            //.setValue(ob);
             //System.out.println(ob);
             interpreter.removeLevel();
 
             if (b == false) {
                 if (o.getType() == DOTCOM) {
                     o = read();
+                    interpreter.flagInterpretation = false;
                     return false;
                 }
                 else {
@@ -669,7 +673,6 @@ class Sinta{
 
     boolean funcFor() {
         boolean b;
-
         if (o.getType() == OPEN_CIRCLE) {
             o = read();
             b = assign();

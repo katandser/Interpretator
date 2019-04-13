@@ -20,7 +20,12 @@ public class Interpreter {
 
     Queue<Integer> stackPC = Collections.asLifoQueue(new ArrayDeque<>());
 
+
+
+
+
     Queue <List <Uno> > stackLevelInterpretation = Collections.asLifoQueue(new ArrayDeque<>());
+
     void addLevel(List <Uno> list) {
         if (flagInterpretation == true) {
             stackLevelInterpretation.add(list);

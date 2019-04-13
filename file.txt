@@ -3,34 +3,16 @@ long long ss = short1 * 9 + ((short1 + 10) * 2);
 
 short main(long h, short kl)
 {
-   short1 = short1 + 10;
-   h = short1 *10 + 1;
-   h = 10 * h;
-   {short dd;}
-   short i;
-   short u = 0;
-
-   for (i = 0; i < 2; i+= 1)
-   {
-       short j;
-       for (j = 0; j < 2; j += 1)
-       {;
-            //j = j + 1;
-            short k;
-            for (k = 0; k < 5; k += 1) {
-                print(u); print();
-                u += 1;
-            }
-            println();
-
-       }
-            //u += 1;
-   }
-   return h + 1;
+    short u = 0;
+    println(h);
+    for (u = 0; h < 30; u += 0)
+    {
+        main(h + 1,kl + 1);
+    }
+    return 0;
 }
 long long ff (){
-
     short1 += 1;
-    main(11,22);
+    main(1,21);
     print(11 + short1);
 }

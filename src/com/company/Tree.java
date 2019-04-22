@@ -13,8 +13,9 @@ class Node{
     private int reType;
     private int type;
     int i = 0;
-    private List<Integer> listType = new LinkedList<>();
-    private List<Uno> listEl = new LinkedList<>();
+    List<Integer> listType = new LinkedList<>();
+    List<Uno> listEl = new LinkedList<>();
+
 
     public void setElem(Uno elem) {
         this.elem = elem;
@@ -51,6 +52,30 @@ class Node{
     public void addElUno(Uno el) {listEl.add(el); }
 
     public Uno getElUno(int i) {return listEl.get(i); }
+
+    public void copy(Node nd) {
+        this.parent = nd.getParent();
+        this.elem = nd.getElem();
+        this.type = nd.getType();
+        this.reType = nd.getReType();
+        this.listType = nd.listType;
+        this.listEl = nd.listEl;
+        this.left = new Node();
+        this.right = new Node();
+        if (nd.getLeft() != null) {
+            this.left.copy(nd.getLeft());
+        }
+        if (nd.getRight() != null) {
+            this.right.copy(nd.getRight());
+        }
+//        for (int i = 0; i < nd.listEl.size(); i++) {
+//            this.right = nd.getRight();//nd.getRight();
+//            this.left = nd.getRight().getLeft();//nd.getLeft();
+//        }
+        this.i = nd.i;
+    }
+    public Node(){}
+
 
     public void setValueElem(Object el, int pos) {
         if (listType.get(i) == SHORT) {
@@ -112,7 +137,7 @@ public class Tree {
     private Node root;
     private Node current;
     private static int depth;
-
+    public Tree dopTree;
 
     public Node getCurrent() {
         return current;
@@ -220,4 +245,20 @@ public class Tree {
             view(n.getLeft());
         }
     }
+
+//    Tree copyTree() {
+//        dopTree = this;
+//        copyAll(dopTree.getRoot());
+//        dopTree = null;
+//    }
+//
+//
+//    Tree copyAll(Node n) {
+//        if (n.getRight() != null) {
+//            copyAll(n.getRight());
+//        }
+//        if (n.getLeft() != null){
+//            copyAll(n.getLeft());
+//        }
+//    }
 }

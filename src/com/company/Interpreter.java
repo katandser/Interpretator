@@ -19,27 +19,52 @@ public class Interpreter {
     public boolean flagInterpretation = true;
 
     Queue<Integer> stackPC = Collections.asLifoQueue(new ArrayDeque<>());
-
-
-
-
-
+    Queue<Node> stackNode = Collections.asLifoQueue(new ArrayDeque<>());
+    Queue<Node> stackVarNode = Collections.asLifoQueue(new ArrayDeque<>());
+    Queue<Object> stackReturn = Collections.asLifoQueue(new ArrayDeque<>());
     Queue <List <Uno> > stackLevelInterpretation = Collections.asLifoQueue(new ArrayDeque<>());
 
-    void addLevel(List <Uno> list) {
-        if (flagInterpretation == true) {
-            stackLevelInterpretation.add(list);
+    void addLevel() {
+        List<Uno> output = new LinkedList<>();
+        if (flagInterpretation) {
+            stackLevelInterpretation.add(output);
         }
     }
     void removeLevel() {
-        if (flagInterpretation == true) {
+        if (flagInterpretation) {
             stackLevelInterpretation.remove();
         }
     }
 
+    public void pushReturn (long l) {
+        stackReturn.add(l);
+    }
+
+    public long pullReturn () {
+        return (long) stackReturn.remove();
+    }
+
+
+    public void pushNode(Node node) {
+        if (flagInterpretation) {
+            stackNode.add(node);
+        }
+    }
+    public Node pullNodeVar() {
+        return stackVarNode.remove();
+    }
+
+    public void pushNodeVar(Node node) {
+        if (flagInterpretation) {
+            stackVarNode.add(node);
+        }
+    }
+    public Node pullNode() {
+        return stackNode.remove();
+    }
 
     public void pushPC(int i) {
-        if (flagInterpretation == true) {
+        if (flagInterpretation) {
             stackPC.add(i);
         }
     }

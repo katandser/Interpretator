@@ -8,6 +8,7 @@ public class Main {
         String file = new String("file.txt");
         sin.open(file);
         sin.o = sin.read();
+        sin.startFunc = "ff";
         boolean b = false;
         while (sin.o.getType() != sin.sc.END && b == false)
         {

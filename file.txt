@@ -1,18 +1,18 @@
-short short1 = ((44 + 44) * 2 / 2 == 0) + 1 * 666 , op = short1;
-long long ss = short1 * 9 + ((short1 + 10) * 2);
+//short short1 = ((44 + 44) * 2 / 2 == 0) + 1 * 666 , op = short1;
+//long long ss = short1 * 9 + ((short1 + 10) * 2);
 
-short main(long h, short kl)
+short main(long h, short a)
 {
-    short u = 0;
-    println(h);
-    for (u = 0; h < 30; u += 0)
-    {
-        main(h + 1,kl + 1);
+    for (;h == 1;) {
+        return 1;
     }
+    main(h + 1,a);
+    println(h);
     return 0;
 }
-long long ff (){
-    short1 += 1;
-    main(1,21);
-    print(11 + short1);
+
+long long ff() {
+    short y = main(0,1);
+    print(y);
+    return 0;
 }

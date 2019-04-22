@@ -36,12 +36,12 @@ public class Interpreter {
         }
     }
 
-    public void pushReturn (long l) {
+    public void pushReturn (Object l) {
         stackReturn.add(l);
     }
 
-    public long pullReturn () {
-        return (long) stackReturn.remove();
+    public Object pullReturn () {
+        return stackReturn.remove();
     }
 
 
@@ -149,6 +149,9 @@ public class Interpreter {
 
         Uno d;
         for (Uno i : input) {
+            if (i.getType() == 0) {
+                i.setType(ID);
+            }
             int type = check(i.getType());
 
             if (type == SYMBOL || type == POST){

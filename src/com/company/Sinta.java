@@ -319,29 +319,59 @@ class Sinta{
             uprO = uprRead();
             Uno ob = o;
             if (uprO.getType() == OPEN_CIRCLE) {
-                if (tr.findFunc(o) == false) {
+                Node nd = tr.findFuncReNd(ob);
+                if (nd == null) {
                     System.out.println("ERROR--" + "unknow function: " + o.getName() + " string: " + o.getStr());
                 }
+                o = read();
+                uprO = uprRead();
                 int count = 0;
-                Node nd = tr.findFuncReNd(o);
-                o = read();
-                o = read();
-                if (o.getType() == CLOSE_CIRCLE) {
+                if (uprO.getType() == CLOSE_CIRCLE) {
                     return cheackArgsFunc(ob, count, nd);
                 }
                 else {
-                    while (b == false)     {
+                    Node node = new Node();
+                    node.copy(nd);
+                    o = read();
+                    for (int i = 0; b == false; i++) {
                         count++;
-                        b = viraj();
-                        if (b == false)         {
-                            if (o.getType() == CLOSE_CIRCLE)             {
-                                return cheackArgsFunc(ob, count, nd);
+                        b = interViraj(node.getElUno(i));
+                        if (b == false) {
+                            if (o.getType() == CLOSE_CIRCLE) {
+                                    boolean ch = cheackArgsFunc(ob, count, node);
+                                    if (interpreter.flagInterpretation) {
+                                        interpreter.pushPC(sc.getPC());
+                                        sc.setPC(node.i);
+                                        o = read();
+                                        interpreter.pushNodeVar(nd);
+                                        interpreter.pushNode(tr.getCurrent());
+                                        tr.setCurrent(node);
+                                        tr.setCurrent(tr.getCurrent().getRight());
+                                        for (int j = 0; j < count; j++ ) {
+                                            tr.setCurrent(tr.getCurrent().getLeft());
+                                            tr.getCurrent().getElem().setValue(node.getElUno(i));
+                                        }
+                                        body(true);
+                                        tr.setCurrent(interpreter.pullNode());
+                                        sc.setPC(interpreter.pullPC());
+                                        Node nd_old = tr.findFuncReNd(ob);
+
+                                        nd_old = interpreter.pullNodeVar();
+                                        //tr.view(tr.getRoot());
+                                        interpreter.flagInterpretation = true;
+                                    }
+                                    Uno uk = new Uno();
+                                     if (interpreter.flagInterpretation) {
+                                    uk.setValue(interpreter.pullReturn());
+                                    interpreter.addElement(uk);}
+                                    o = read();
+                                    return ch;
                             }
-                            else if (o.getType() == COM)             {
+                            else if (o.getType() == COM) {
                                 o = read();
                             }
-                            else             {
-                                printERROR(ERFPAR);
+                            else {
+                                printERROR(ERCOMORDOTCOM);
                                 return true;
                             }
                         }
@@ -642,7 +672,7 @@ class Sinta{
             b = viraj();
             if (interpreter.flagInterpretation) {
                 Object ob = Interpreter.vir(interpreter.stackLevelInterpretation.peek());
-                interpreter.pushReturn((long)ob);
+                interpreter.pushReturn(ob);
             }
             //.setValue(ob);
             //System.out.println(ob);

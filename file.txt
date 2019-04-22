@@ -1,18 +1,32 @@
 //short short1 = ((44 + 44) * 2 / 2 == 0) + 1 * 666 , op = short1;
 //long long ss = short1 * 9 + ((short1 + 10) * 2);
 
+long exp(long a) {
+    return a*a;
+}
+
+long sum(short a, short b) {
+    return a + b;
+}
+
 short main(long h, short a)
 {
     for (;h == 1;) {
         return 1;
     }
     main(h + 1,a);
-    println(h);
-    return 0;
+    //println(h);
+    return 100;
 }
 
 long long ff() {
-    short y = main(0,1);
-    print(y);
+    long y = 1;
+    short i = 0;
+    for (;i < 100; i += 1) {
+        y = exp(i);
+        println(y);
+    }
+    print (sum(sum(1,1), sum(1,1)));
+
     return 0;
 }
